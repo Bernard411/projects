@@ -1,0 +1,261 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Ai-powered virtual fashion stylist </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+<link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="app-container">
+{% include 'k/side.html' %}
+  <div class="app-content">
+    <div class="app-content-header">
+      <h1 class="app-content-headerText">Ai-powered virtual fashion stylist (travel)</h1>
+      <button class="mode-switch" title="Switch Theme">
+        <svg class="moon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="24" height="24" viewBox="0 0 24 24">
+          <defs></defs>
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+        </svg>
+      </button>
+    
+    </div>
+    <div class="app-content-actions">
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Left and Right Cards</title>
+<style>
+    body {
+        font-family: Poppins;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    .card {
+       
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        width: 45%;
+        height: 100%;
+        color: white;
+       
+    }
+    form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 1em;
+        }
+
+        label {
+            margin-top: 1em;
+            display: block;
+        }
+
+        input[type="text"], input[type="number"], input[type="email"], select {
+            width: 100%;
+            padding: 0.5em;
+            margin-top: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 0.5em;
+        }
+
+        button {
+            margin-top: 1em;
+            padding: 0.5em 1em;
+            border: none;
+            border-radius: 0.5em;
+            background: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+</style>
+</head>
+<body>
+    <div class="card">
+        <form id="recommendation-form">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" required>
+    
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+    
+            <label for="temp_sensitivity">Temperature Sensitivity (°C):</label>
+            <input type="number" id="temp_sensitivity" name="temp_sensitivity" value="0">
+    
+            <label for="preferred_colors">Preferred Colors (comma-separated):</label>
+            <input type="text" id="preferred_colors" name="preferred_colors">
+    
+            <button type="submit">Get Recommendations</button>
+        </form>
+    </div>
+    
+    <div class="card">
+        <div id="recommendations" class="recommendations-container">
+            <h3 style="background-color: white; color: black;">know what to wear</h3>
+            <div id="weather" class="recommendation"></div>
+            <div id="formal" class="recommendation"></div>
+            <div id="casual" class="recommendation"></div>
+            <div id="sports" class="recommendation"></div>
+        </div>
+    </div>
+</body>
+</html>
+
+    </div>
+  </div>
+</div>
+
+  <script  src="{% static 'script.js' %}"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+      const API_KEY = '7c3a479127bb331300be72a531799036';
+
+      function fetchWeatherData(city) {
+          const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+          return fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                  if (data.cod !== 200) {
+                      throw new Error('Error fetching weather data');
+                  }
+                  return {
+                      temperature: data.main.temp,
+                      condition: data.weather[0].main,
+                      city: data.name,
+                      country: data.sys.country,
+                      description: data.weather[0].description,
+                      humidity: data.main.humidity,
+                      wind_speed: data.wind.speed
+                  };
+              });
+      }
+
+      function generateRecommendations(userData, weatherData) {
+          const { city, gender, temp_sensitivity, preferred_colors } = userData;
+          const temperature = weatherData.temperature + temp_sensitivity;
+          const condition = weatherData.condition;
+          const recommendations = {
+              weather: weatherData,
+              formal: [],
+              casual: [],
+              sports: []
+          };
+
+          if (temperature < 0) {
+              if (gender === 'male') {
+                  recommendations.formal.push('Heavy winter formal wear (e.g., thermal suits)');
+                  recommendations.casual.push('Heavy winter casual wear (e.g., thermal jackets)');
+                  recommendations.sports.push('Heavy winter sportswear (e.g., thermal activewear)');
+              } else {
+                  recommendations.formal.push('Heavy winter formal wear (e.g., woolen dresses)');
+                  recommendations.casual.push('Heavy winter casual wear (e.g., thermal jackets, long skirts)');
+                  recommendations.sports.push('Heavy winter sportswear (e.g., thermal leggings, sports bras)');
+              }
+          } else if (temperature < 10) {
+              if (gender === 'male') {
+                  recommendations.formal.push('Winter formal wear (e.g., suits, sweaters)');
+                  recommendations.casual.push('Winter casual wear (e.g., sweaters, jackets)');
+                  recommendations.sports.push('Winter sportswear (e.g., sports jackets, pants)');
+              } else {
+                  recommendations.formal.push('Winter formal wear (e.g., dresses, sweaters)');
+                  recommendations.casual.push('Winter casual wear (e.g., sweaters, jackets, long skirts)');
+                  recommendations.sports.push('Winter sportswear (e.g., sports jackets, leggings)');
+              }
+          } else if (temperature < 20) {
+              if (gender === 'male') {
+                  recommendations.formal.push('Light formal wear (e.g., suits, blazers)');
+                  recommendations.casual.push('Light casual wear (e.g., jackets, long sleeve shirts)');
+                  recommendations.sports.push('Light sportswear (e.g., track suits)');
+              } else {
+                  recommendations.formal.push('Light formal wear (e.g., dresses, blazers)');
+                  recommendations.casual.push('Light casual wear (e.g., cardigans, long sleeve shirts)');
+                  recommendations.sports.push('Light sportswear (e.g., track suits, leggings)');
+              }
+          } else {
+              if (gender === 'male') {
+                  recommendations.formal.push('Summer formal wear (e.g., light suits, dress shirts)');
+                  recommendations.casual.push('Summer casual wear (e.g., t-shirts, shorts)');
+                  recommendations.sports.push('Summer sportswear (e.g., shorts, sports t-shirts)');
+              } else {
+                  recommendations.formal.push('Summer formal wear (e.g., light dresses, blouses)');
+                  recommendations.casual.push('Summer casual wear (e.g., t-shirts, skirts)');
+                  recommendations.sports.push('Summer sportswear (e.g., shorts, sports bras, sports t-shirts)');
+              }
+          }
+
+          if (condition === 'Rain') {
+              recommendations.formal.push('Waterproof formal wear');
+              recommendations.casual.push('Waterproof casual wear');
+              recommendations.sports.push('Waterproof sportswear');
+          } else if (condition === 'Sunny') {
+              recommendations.formal.push('Sunglasses and hats for formal wear');
+              recommendations.casual.push('Sunglasses and hats for casual wear');
+              recommendations.sports.push('Sunglasses and hats for sportswear');
+          }
+
+          if (preferred_colors.length) {
+              recommendations.formal.push(`Preferred colors: ${preferred_colors.join(', ')}`);
+              recommendations.casual.push(`Preferred colors: ${preferred_colors.join(', ')}`);
+              recommendations.sports.push(`Preferred colors: ${preferred_colors.join(', ')}`);
+          }
+
+          return recommendations;
+      }
+
+      $(document).ready(function() {
+          $('#recommendation-form').on('submit', function(event) {
+              event.preventDefault();
+
+              const userData = {
+                  city: $('#city').val(),
+                  gender: $('#gender').val(),
+                  temp_sensitivity: parseInt($('#temp_sensitivity').val()) || 0,
+                  preferred_colors: $('#preferred_colors').val().split(',').map(color => color.trim())
+              };
+
+              fetchWeatherData(userData.city)
+                  .then(weatherData => {
+                      const recommendations = generateRecommendations(userData, weatherData);
+
+                      $('#weather').html(`
+                          <h4>Weather in ${weatherData.city}, ${weatherData.country}</h4>
+                          <p>Temperature: ${weatherData.temperature} °C</p>
+                          <p>Condition: ${weatherData.condition} (${weatherData.description})</p>
+                          <p>Humidity: ${weatherData.humidity}%</p>
+                          <p>Wind Speed: ${weatherData.wind_speed} m/s</p>
+                      `);
+                      $('#formal').html(`<h4>Formal Wear</h4><p>${recommendations.formal.join('<br>')}</p>`);
+                      $('#casual').html(`<h4>Casual Wear</h4><p>${recommendations.casual.join('<br>')}</p>`);
+                      $('#sports').html(`<h4>Sports Wear</h4><p>${recommendations.sports.join('<br>')}</p>`);
+                  })
+                  .catch(error => {
+                      $('#recommendations').html(`<p>Error fetching recommendations: ${error.message}</p>`);
+                  });
+          });
+      });
+  </script>
+</body>
+</html>
+
